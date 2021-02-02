@@ -182,6 +182,10 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         return logits
 
     def run_D_face(self, img):
+        numpy_img = img.to('cpu').detach().numpy().copy()
+        print ('\n\n\n\n')
+        print (numpy_img.shape)
+        print ('\n\n\n\n')
         pil_img=torchvision.transforms.functional.to_pil_image(img)
         img_cropped = self.D_mtcnn(pil_img)
         img_embedding = self.D_face(img_cropped.unsqueeze(0))
