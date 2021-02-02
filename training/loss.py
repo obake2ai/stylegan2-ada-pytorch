@@ -12,6 +12,8 @@ from torch_utils import training_stats
 from torch_utils import misc
 from torch_utils.ops import conv2d_gradfix
 
+import torchvision
+
 #----------------------------------------------------------------------------
 
 class Loss:
@@ -180,10 +182,8 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         return logits
 
     def run_D_face(self, img):
-        print ('\n\n\n\n')
-        print (type(img))
-        print ('\n\n\n\n')
-        img_cropped = self.D_mtcnn(img)
+        pil_img=torchvision.transforms.functional.to_pil_image(img)
+        img_cropped = self.D_mtcnn(pil_img)
         img_embedding = self.D_face(img_cropped.unsqueeze(0))
         self.D_face.classify = True
         logits = self.D_face(img_cropped.unsqueeze(0))
