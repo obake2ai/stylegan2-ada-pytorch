@@ -196,6 +196,8 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
             img_cropped = self.D_mtcnn(rgb_pil_img)
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
             self.D_face.classify = True
+            print (type(self.D_face(img_cropped.unsqueeze(0))))
+            print (self.D_face(img_cropped.unsqueeze(0)).shape)
             logits[idx][0] += self.D_face(img_cropped.unsqueeze(0))
         return logits
 
