@@ -136,7 +136,8 @@ def list_add(in1, in2):
     if len(in1) == len(in2):
         wrk = np.array(in1) + np.array(in2)
         return wrk.tolist()
-    else return in1
+    else:
+        return in1
 
 class StyleGAN2Loss_obake(Loss): #this func is called by default
     def __init__(self, device, G_mapping, G_synthesis, D, D_mtcnn, D_face, augment_pipe=None, style_mixing_prob=0.9, r1_gamma=10, pl_batch_shrink=2, pl_decay=0.01, pl_weight=2):
