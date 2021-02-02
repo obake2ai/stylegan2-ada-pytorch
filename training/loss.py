@@ -183,14 +183,13 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
 
     def run_D_face(self, img):
         numpy_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1)
-        print ('\n\n\n\n')
-        print (numpy_img.shape)
-        print ('\n\n\n\n')
-        pil_img=torchvision.transforms.functional.to_pil_image(img)
-        img_cropped = self.D_mtcnn(pil_img)
-        img_embedding = self.D_face(img_cropped.unsqueeze(0))
-        self.D_face.classify = True
-        logits = self.D_face(img_cropped.unsqueeze(0))
+        logits = 0
+        for idx in range(numpy_img.shape[0]):
+            pil_img=torchvision.transforms.functional.to_pil_image(numpy_img[idx])
+            img_cropped = self.D_mtcnn(pil_img)
+            img_embedding = self.D_face(img_cropped.unsqueeze(0))
+            self.D_face.classify = True
+            logits += self.D_face(img_cropped.unsqueeze(0))
         return logits
 
     def accumulate_gradients(self, phase, real_img, real_c, gen_z, gen_c, sync, gain):
