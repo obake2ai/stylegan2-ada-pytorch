@@ -13,6 +13,7 @@ from torch_utils import misc
 from torch_utils.ops import conv2d_gradfix
 
 import torchvision
+from PIL import Image
 
 #----------------------------------------------------------------------------
 
@@ -186,7 +187,6 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         for idx in range(img.shape[0]):
             bgr_pil_img=torchvision.transforms.functional.to_pil_image(img[idx], mode='RGB')
             rgb_pil_img= Image.fromarray(np.asarray(bgr_pil_image)[:,:,::-1], mode='RGB')
-            from PIL import Image
             rgb_pil_img.save("./training-runs/test.png")
             img_cropped = self.D_mtcnn(rgb_pil_img)
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
