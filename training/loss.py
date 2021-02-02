@@ -132,6 +132,11 @@ class StyleGAN2Loss(Loss): #this func is called by default
 
 #----------------------------------------------------------------------------
 
+def list_add(in1, in2):
+    if len(in1) == len(in2):
+        wrk = np.array(in1) + np.array(in2)
+        return wrk.tolist()
+    else return in1
 
 class StyleGAN2Loss_obake(Loss): #this func is called by default
     def __init__(self, device, G_mapping, G_synthesis, D, D_mtcnn, D_face, augment_pipe=None, style_mixing_prob=0.9, r1_gamma=10, pl_batch_shrink=2, pl_decay=0.01, pl_weight=2):
@@ -173,7 +178,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         img_cropped = self.D_mtcnn(img)
         img_embedding = self.D_face(img_cropped.unsqueeze(0))
         self.D_face.classify = True
-        logits = resnet(img_cropped.unsqueeze(0))
+        logits = self.D_face(img_cropped.unsqueeze(0))
         return logits
 
     def accumulate_gradients(self, phase, real_img, real_c, gen_z, gen_c, sync, gain):
@@ -187,7 +192,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Gmain:
             with torch.autograd.profiler.record_function('Gmain_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
-                gen_logits = self.run_D(gen_img, gen_c, sync=False) + self.run_D_face(gen_img)
+                gen_logits = list_add(self.run_D(gen_img, gen_c, sync=False), self.run_D_face(gen_img))
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Gmain = torch.nn.functional.softplus(-gen_logits) # -log(sigmoid(gen_logits))
@@ -218,7 +223,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Dmain:
             with torch.autograd.profiler.record_function('Dgen_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=False)
-                gen_logits = self.run_D(gen_img, gen_c, sync=False)  + self.run_D_face(gen_img) # Gets synced by loss_Dreal.
+                gen_logits = list_add(self.run_D(gen_img, gen_c, sync=False), self.run_D_face(gen_img)) # Gets synced by loss_Dreal.
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Dgen = torch.nn.functional.softplus(gen_logits) # -log(1 - sigmoid(gen_logits))
@@ -231,7 +236,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
             name = 'Dreal_Dr1' if do_Dmain and do_Dr1 else 'Dreal' if do_Dmain else 'Dr1'
             with torch.autograd.profiler.record_function(name + '_forward'):
                 real_img_tmp = real_img.detach().requires_grad_(do_Dr1)
-                real_logits = self.run_D(real_img_tmp, real_c, sync=sync) + self.run_D_face(real_img_tmp)
+                real_logits = list_add(self.run_D(real_img_tmp, real_c, sync=sync), self.run_D_face(real_img_tmp))
                 training_stats.report('Loss/scores/real', real_logits)
                 training_stats.report('Loss/signs/real', real_logits.sign())
 
