@@ -174,11 +174,8 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
 
     def run_D_face(self, img):
         logits = torch.zeros(img.shape[0], 1)
-        print (img.shape)
         for idx in range(img.shape[0]):
-            print (img[idx].shape)
             bgr_pil_img=torchvision.transforms.functional.to_pil_image(img[idx], mode='RGB')
-            print (bgr_pil_img.size)
             rgb_pil_img= Image.fromarray(np.asarray(bgr_pil_img)[:,:,::-1], mode='RGB')
             rgb_pil_img.save("./training-runs/test.png")
             img_cropped = self.D_mtcnn(rgb_pil_img)
@@ -198,7 +195,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Gmain:
             with torch.autograd.profiler.record_function('Gmain_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
-                gen_logits = self.run_D(gen_img, gen_c, sync=False) + self.run_D_face(gen_img).to(device)/self.loss_ratio
+                gen_logits = self.run_D(gen_img, gen_c, sync=False) + self.run_D_face(gen_img).to(self.device)/self.loss_ratio
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Gmain = torch.nn.functional.softplus(-gen_logits) # -log(sigmoid(gen_logits))
