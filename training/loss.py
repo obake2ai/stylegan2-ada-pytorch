@@ -184,11 +184,11 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
     def run_D_face(self, img):
         logits = 0
         for idx in range(img.shape[0]):
-            pil_img=torchvision.transforms.functional.to_pil_image(img[idx], mode='RGB')[:,:,::-1]
+            bgr_pil_img=torchvision.transforms.functional.to_pil_image(img[idx], mode='RGB')
+            rgb_pil_img= Image.fromarray(np.asarray(bgr_pil_image)[:,:,::-1], mode='RGB')
             from PIL import Image
-            pil_img.save("./training-runs/test.png")
-            print (type(pil_img))
-            img_cropped = self.D_mtcnn(pil_img)
+            rgb_pil_img.save("./training-runs/test.png")
+            img_cropped = self.D_mtcnn(rgb_pil_img)
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
             self.D_face.classify = True
             logits += self.D_face(img_cropped.unsqueeze(0))
@@ -237,7 +237,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Dmain:
             with torch.autograd.profiler.record_function('Dgen_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=False)
-                gen_logits = list_add(self.run_D(gen_img, gen_c, sync=False), self.run_D_face(gen_img)) # Gets synced by loss_Dreal.
+                gen_logits = self.run_D(gen_img, gen_c, sync=False) # Gets synced by loss_Dreal.
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Dgen = torch.nn.functional.softplus(gen_logits) # -log(1 - sigmoid(gen_logits))
@@ -250,7 +250,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
             name = 'Dreal_Dr1' if do_Dmain and do_Dr1 else 'Dreal' if do_Dmain else 'Dr1'
             with torch.autograd.profiler.record_function(name + '_forward'):
                 real_img_tmp = real_img.detach().requires_grad_(do_Dr1)
-                real_logits = list_add(self.run_D(real_img_tmp, real_c, sync=sync), self.run_D_face(real_img_tmp))
+                real_logits = self.run_D(real_img_tmp, real_c, sync=sync)
                 training_stats.report('Loss/scores/real', real_logits)
                 training_stats.report('Loss/signs/real', real_logits.sign())
 
