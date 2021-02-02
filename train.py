@@ -184,7 +184,7 @@ def setup_training_loop_kwargs(
     args.D_kwargs.epilogue_kwargs.mbstd_group_size = spec.mbstd
 
     args.D2_kwargs.mtcnn_output_size = 160
-    args.D2_kwargs.mtcnn_margin = 0
+    args.D2_kwargs.mtcnn_output_margin = 0
     args.D2_kwargs.mtcnn_thresholds = [0.6, 0.7, 0.7]
     args.D2_kwargs.resnet_type = 'vggface2'
 
