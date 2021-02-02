@@ -142,8 +142,10 @@ def list_add(in1, in2):
     print ('\n\n\n\n')
     if len(in1) == len(in2):
         wrk = np.array(in1) + np.array(in2)
+        print ('add')
         return wrk.tolist()
     else:
+        print ('pass')
         return in1
 
 class StyleGAN2Loss_obake(Loss): #this func is called by default
@@ -183,7 +185,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         return logits
 
     def run_D_face(self, img):
-        logits = 0
+        logits = torch.zeros(img.shape[0], 1)
         print (img.shape)
         for idx in range(img.shape[0]):
             print (img[idx].shape)
@@ -194,8 +196,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
             img_cropped = self.D_mtcnn(rgb_pil_img)
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
             self.D_face.classify = True
-            logits += self.D_face(img_cropped.unsqueeze(0))
-        print (logits)
+            logits[idx][0] += self.D_face(img_cropped.unsqueeze(0))
         return logits
 
     def accumulate_gradients(self, phase, real_img, real_c, gen_z, gen_c, sync, gain):
