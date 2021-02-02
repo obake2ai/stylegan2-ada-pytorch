@@ -182,8 +182,9 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         return logits
 
     def run_D_face(self, img):
-        tmp_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1)
-        numpy_img = (tmp_img.clip(0, None)/np.amax(tmp_img)*255).astype(np.int64)
+        # tmp_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1)
+        # numpy_img = (tmp_img.clip(0, None)/np.amax(tmp_img)*255).astype(np.int64)
+        numpy_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1).clip(0,1)
         print (np.amin(numpy_img))
         print (np.amax(numpy_img))
         logits = 0
