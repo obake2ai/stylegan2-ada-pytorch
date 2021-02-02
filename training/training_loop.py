@@ -149,7 +149,7 @@ def training_loop(
     common_kwargs = dict(c_dim=training_set.label_dim, img_resolution=training_set.resolution, img_channels=training_set.num_channels)
     G = dnnlib.util.construct_class_by_name(**G_kwargs, **common_kwargs).train().requires_grad_(False).to(device) # subclass of torch.nn.Module
     D = dnnlib.util.construct_class_by_name(**D_kwargs, **common_kwargs).train().requires_grad_(False).to(device) # subclass of torch.nn.Module
-    D_mtcnn = MTCNN(image_size=D2_kwargs.mtcnn_output_size, margin=D2_kwargs.mtcnn_output_margin, thresholds=D2_kwargs.mtcnn_output_thresholds)
+    D_mtcnn = MTCNN(image_size=D2_kwargs.mtcnn_output_size, margin=D2_kwargs.mtcnn_output_margin, thresholds=D2_kwargs.mtcnn_thresholds)
     D_face = InceptionResnetV1(pretrained=D2_kwargs.resnet_type).eval()
     G_ema = copy.deepcopy(G).eval()
 
