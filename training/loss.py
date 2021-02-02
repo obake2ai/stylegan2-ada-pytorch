@@ -182,7 +182,9 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         return logits
 
     def run_D_face(self, img):
-        numpy_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1)*255
+        numpy_img = img.to('cpu').detach().numpy().copy().transpose(0, 2, 3, 1)
+        print (np.amin(numpy_img))
+        print (np.amax(numpy_img))
         logits = 0
         for idx in range(numpy_img.shape[0]):
             pil_img=torchvision.transforms.functional.to_pil_image(numpy_img[idx], mode='RGB')
