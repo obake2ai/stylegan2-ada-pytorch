@@ -22,6 +22,8 @@ from metrics import metric_main
 from torch_utils import training_stats
 from torch_utils import custom_ops
 
+from facenet_pytorch import MTCNN, InceptionResnetV1
+
 #----------------------------------------------------------------------------
 
 class UserError(Exception):
