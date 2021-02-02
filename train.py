@@ -182,10 +182,10 @@ def setup_training_loop_kwargs(
     args.G_kwargs.synthesis_kwargs.conv_clamp = args.D_kwargs.conv_clamp = 256 # clamp activations to avoid float16 overflow
     args.D_kwargs.epilogue_kwargs.mbstd_group_size = spec.mbstd
 
-    args.D_kwargs.mtcnn_output_size = 160
-    args.D_kwargs.mtcnn_margin = 0
-    args.D_kwargs.mtcnn_thresholds = [0.6, 0.7, 0.7]
-    args.D_kwargs.resnet_type = 'vggface2'
+    args.D2_kwargs.mtcnn_output_size = 160
+    args.D2_kwargs.mtcnn_margin = 0
+    args.D2_kwargs.mtcnn_thresholds = [0.6, 0.7, 0.7]
+    args.D2_kwargs.resnet_type = 'vggface2'
 
     args.G_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
     args.D_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
