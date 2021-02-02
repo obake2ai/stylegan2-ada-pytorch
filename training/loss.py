@@ -186,6 +186,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         logits = 0
         for idx in range(numpy_img.shape[0]):
             pil_img=torchvision.transforms.functional.to_pil_image(numpy_img[idx], mode='RGB')
+            print (type(pil_img))
             img_cropped = self.D_mtcnn(pil_img)
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
             self.D_face.classify = True
