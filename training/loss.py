@@ -133,6 +133,10 @@ class StyleGAN2Loss(Loss): #this func is called by default
 #----------------------------------------------------------------------------
 
 def list_add(in1, in2):
+    print ('\n\n\n\n')
+    print (type(in1))
+    print (type(in2))
+    print ('\n\n\n\n')
     if len(in1) == len(in2):
         wrk = np.array(in1) + np.array(in2)
         return wrk.tolist()
