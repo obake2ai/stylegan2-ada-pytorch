@@ -184,7 +184,9 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
 
     def run_D_face(self, img):
         logits = 0
+        print (img.shape)
         for idx in range(img.shape[0]):
+            print (img[idx].shape)
             bgr_pil_img=torchvision.transforms.functional.to_pil_image(img[idx], mode='RGB')
             print (bgr_pil_img.size)
             rgb_pil_img= Image.fromarray(np.asarray(bgr_pil_img)[:,:,::-1], mode='RGB')
