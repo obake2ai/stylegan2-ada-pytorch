@@ -135,18 +135,6 @@ class StyleGAN2Loss(Loss): #this func is called by default
 
 #----------------------------------------------------------------------------
 
-def loss_add(in1, in2):
-    # print ('\n\n\n\n')
-    # print (in1,torch.max(in1),torch.min(in1),torch.mean(in1),in1.shape)
-    # print (in2,torch.max(in2),torch.min(in2),torch.mean(in2),in2.shape)
-    # print ('\n\n\n\n')
-    if len(in1) == len(in2):
-        print ('add')
-        return in1+in2/2
-    else:
-        print ('pass')
-        return in1
-
 class StyleGAN2Loss_obake(Loss): #this func is called by default
     def __init__(self, device, G_mapping, G_synthesis, D, D_mtcnn, D_face, augment_pipe=None, style_mixing_prob=0.9, r1_gamma=10, pl_batch_shrink=2, pl_decay=0.01, pl_weight=2):
         super().__init__()
@@ -163,6 +151,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         self.pl_decay = pl_decay
         self.pl_weight = pl_weight
         self.pl_mean = torch.zeros([], device=device)
+        self.loss_ratio = 2
 
     def run_G(self, z, c, sync):
         with misc.ddp_sync(self.G_mapping, sync):
@@ -209,7 +198,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Gmain:
             with torch.autograd.profiler.record_function('Gmain_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
-                gen_logits = loss_add(self.run_D(gen_img, gen_c, sync=False), self.run_D_face(gen_img))
+                gen_logits = self.run_D(gen_img, gen_c, sync=False) + self.run_D_face(gen_img).to(device)/self.loss_ratio
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Gmain = torch.nn.functional.softplus(-gen_logits) # -log(sigmoid(gen_logits))
