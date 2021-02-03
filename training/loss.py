@@ -179,6 +179,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
             rgb_pil_img= Image.fromarray(np.asarray(bgr_pil_img)[:,:,::-1], mode='RGB')
             # rgb_pil_img.save("./training-runs/test.png")
             img_cropped = self.D_mtcnn(rgb_pil_img)
+            print (type(img_cropped))
             img_embedding = self.D_face(img_cropped.unsqueeze(0))
             self.D_face.classify = True
             logits[idx][0] += torch.sum(self.D_face(img_cropped.unsqueeze(0)))
