@@ -24,7 +24,7 @@ from torch_utils.ops import grid_sample_gradfix
 import legacy
 from metrics import metric_main
 
-from facenet-pytorch import MTCNN, InceptionResnetV1
+from facenet_pytorch import MTCNN, InceptionResnetV1
 
 #----------------------------------------------------------------------------
 
