@@ -178,7 +178,6 @@ def setup_training_loop_kwargs(
 
     args.G_kwargs = dnnlib.EasyDict(class_name='training.networks.Generator', z_dim=512, w_dim=512, mapping_kwargs=dnnlib.EasyDict(), synthesis_kwargs=dnnlib.EasyDict())
     args.D_kwargs = dnnlib.EasyDict(class_name='training.networks.Discriminator', block_kwargs=dnnlib.EasyDict(), mapping_kwargs=dnnlib.EasyDict(), epilogue_kwargs=dnnlib.EasyDict())
-    args.D2_kwargs = dnnlib.EasyDict(class_name='training.networks.Discriminator', block_kwargs=dnnlib.EasyDict(), mapping_kwargs=dnnlib.EasyDict(), epilogue_kwargs=dnnlib.EasyDict())
     args.G_kwargs.synthesis_kwargs.channel_base = args.D_kwargs.channel_base = int(spec.fmaps * 32768)
     args.G_kwargs.synthesis_kwargs.channel_max = args.D_kwargs.channel_max = 512
     args.G_kwargs.mapping_kwargs.num_layers = spec.map
@@ -186,14 +185,15 @@ def setup_training_loop_kwargs(
     args.G_kwargs.synthesis_kwargs.conv_clamp = args.D_kwargs.conv_clamp = 256 # clamp activations to avoid float16 overflow
     args.D_kwargs.epilogue_kwargs.mbstd_group_size = spec.mbstd
 
-    args.D2_kwargs.mtcnn_output_size = 160
-    args.D2_kwargs.mtcnn_output_margin = 0
-    args.D2_kwargs.mtcnn_thresholds = [0.6, 0.7, 0.7]
-    args.D2_kwargs.resnet_type = 'vggface2'
 
     args.G_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
     args.D_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
     if obake is not None:
+        args.D2_kwargs = dnnlib.EasyDict(class_name='training.networks.Discriminator', block_kwargs=dnnlib.EasyDict(), mapping_kwargs=dnnlib.EasyDict(), epilogue_kwargs=dnnlib.EasyDict())
+        args.D2_kwargs.mtcnn_output_size = 160
+        args.D2_kwargs.mtcnn_output_margin = 0
+        args.D2_kwargs.mtcnn_thresholds = [0.6, 0.7, 0.7]
+        args.D2_kwargs.resnet_type = 'vggface2'
         args.loss_kwargs = dnnlib.EasyDict(class_name='training.loss.StyleGAN2Loss_obake', r1_gamma=spec.gamma)
         desc += '-obake'
         args.obake = True
