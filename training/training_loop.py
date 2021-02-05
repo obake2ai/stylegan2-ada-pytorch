@@ -153,6 +153,7 @@ def training_loop(
     D = dnnlib.util.construct_class_by_name(**D_kwargs, **common_kwargs).train().requires_grad_(False).to(device) # subclass of torch.nn.Module
     G_ema = copy.deepcopy(G).eval()
     if obake is not None:
+        print (obake)
         D_mtcnn = MTCNN(image_size=D2_kwargs.mtcnn_output_size, margin=D2_kwargs.mtcnn_output_margin, thresholds=D2_kwargs.mtcnn_thresholds)
         D_face = InceptionResnetV1(pretrained=D2_kwargs.resnet_type).eval()
 
