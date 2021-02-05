@@ -63,6 +63,9 @@ def setup_training_loop_kwargs(
     nhwc       = None, # Use NHWC memory format with FP16: <bool>, default = False
     nobench    = None, # Disable cuDNN benchmarking: <bool>, default = False
     workers    = None, # Override number of DataLoader workers: <int>, default = 3
+
+    # Obake options.
+    obake       = None, # Disable Obake training: <bool>, default = False
 ):
     args = dnnlib.EasyDict()
 
@@ -190,7 +193,11 @@ def setup_training_loop_kwargs(
 
     args.G_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
     args.D_opt_kwargs = dnnlib.EasyDict(class_name='torch.optim.Adam', lr=spec.lrate, betas=[0,0.99], eps=1e-8)
-    args.loss_kwargs = dnnlib.EasyDict(class_name='training.loss.StyleGAN2Loss_obake', r1_gamma=spec.gamma)
+    if obake is not None:
+        args.loss_kwargs = dnnlib.EasyDict(class_name='training.loss.StyleGAN2Loss_obake', r1_gamma=spec.gamma)
+        desc += '-obake'
+    else:
+        args.loss_kwargs = dnnlib.EasyDict(class_name='training.loss.StyleGAN2Loss', r1_gamma=spec.gamma)
 
     args.total_kimg = spec.kimg
     args.batch_size = spec.mb
@@ -434,6 +441,9 @@ class CommaSeparatedList(click.ParamType):
 @click.option('--nobench', help='Disable cuDNN benchmarking', type=bool, metavar='BOOL')
 @click.option('--workers', help='Override number of DataLoader workers', type=int, metavar='INT')
 
+# Obake options.
+@click.option('--obake', help='Start Obake Training', type=bool, metavar='BOOL')
+
 def main(ctx, outdir, dry_run, **config_kwargs):
     """Train a GAN using the techniques described in the paper
     "Training Generative Adversarial Networks with Limited Data".
@@ -509,6 +519,7 @@ def main(ctx, outdir, dry_run, **config_kwargs):
     print(f'Image resolution:   {args.training_set_kwargs.resolution}')
     print(f'Conditional model:  {args.training_set_kwargs.use_labels}')
     print(f'Dataset x-flips:    {args.training_set_kwargs.xflip}')
+    print(f'Obake:    {args.training_set_kwargs.obake}')
     print()
 
     # Dry run?
