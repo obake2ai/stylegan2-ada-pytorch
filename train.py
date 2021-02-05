@@ -200,7 +200,7 @@ def setup_training_loop_kwargs(
     else:
         args.loss_kwargs = dnnlib.EasyDict(class_name='training.loss.StyleGAN2Loss', r1_gamma=spec.gamma)
         desc += '-noobake'
-        args.obake = False
+        args.obake = None
 
     args.total_kimg = spec.kimg
     args.batch_size = spec.mb
