@@ -196,7 +196,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         if do_Gmain:
             with torch.autograd.profiler.record_function('Gmain_forward'):
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
-                gen_logits = self.run_D(gen_img, gen_c, sync=False) + self.run_D_face(gen_img).to(self.device)/self.loss_ratio
+                gen_logits = self.run_D(gen_img, gen_c, sync=False) - self.run_D_face(gen_img).to(self.device)/self.loss_ratio
                 training_stats.report('Loss/scores/fake', gen_logits)
                 training_stats.report('Loss/signs/fake', gen_logits.sign())
                 loss_Gmain = torch.nn.functional.softplus(-gen_logits) # -log(sigmoid(gen_logits))
