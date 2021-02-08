@@ -194,8 +194,8 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
 
         # Gmain: Maximize logits for generated images.
         if do_Gmain:
+            print ('obakeeeeee')
             with torch.autograd.profiler.record_function('Gmain_forward'):
-                print ('obakeeeeee')
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
                 gen_logits = self.run_D(gen_img, gen_c, sync=False) - self.run_D_face(gen_img).to(self.device)/self.loss_ratio
                 training_stats.report('Loss/scores/fake', gen_logits)
@@ -207,6 +207,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
 
         # Gpl: Apply path length regularization.
         if do_Gpl:
+            print ('noobakeeeeee')
             with torch.autograd.profiler.record_function('Gpl_forward'):
                 batch_size = gen_z.shape[0] // self.pl_batch_shrink
                 gen_img, gen_ws = self.run_G(gen_z[:batch_size], gen_c[:batch_size], sync=sync)
