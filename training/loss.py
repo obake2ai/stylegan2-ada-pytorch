@@ -151,7 +151,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         self.pl_decay = pl_decay
         self.pl_weight = pl_weight
         self.pl_mean = torch.zeros([], device=device)
-        self.loss_ratio = 2
+        self.loss_ratio = 1
 
     def run_G(self, z, c, sync):
         with misc.ddp_sync(self.G_mapping, sync):
@@ -195,6 +195,7 @@ class StyleGAN2Loss_obake(Loss): #this func is called by default
         # Gmain: Maximize logits for generated images.
         if do_Gmain:
             with torch.autograd.profiler.record_function('Gmain_forward'):
+                print ('obakeeeeee')
                 gen_img, _gen_ws = self.run_G(gen_z, gen_c, sync=(sync and not do_Gpl)) # May get synced by Gpl.
                 gen_logits = self.run_D(gen_img, gen_c, sync=False) - self.run_D_face(gen_img).to(self.device)/self.loss_ratio
                 training_stats.report('Loss/scores/fake', gen_logits)
